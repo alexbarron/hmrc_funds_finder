@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  letter_group: MyString
+  reporting_fund_ref: MyString
+  parent_fund: MyString
+  hmrc_share_class_ref_no: MyString
+  sub_fund_name: MyString
+  isin_no: MyString
+  cusip_no: MyString
+  reporting_from: 2024-02-06
+  ceased_at: 2024-02-06
+
+two:
+  letter_group: MyString
+  reporting_fund_ref: MyString
+  parent_fund: MyString
+  hmrc_share_class_ref_no: MyString
+  sub_fund_name: MyString
+  isin_no: MyString
+  cusip_no: MyString
+  reporting_from: 2024-02-06
+  ceased_at: 2024-02-06

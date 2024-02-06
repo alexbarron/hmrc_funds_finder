@@ -1,0 +1,28 @@
+<table class="table-auto">
+  <thead>
+    <tr>
+      <th>Reporting Fund Ref</th>
+      <th>Parent Fund</th>
+      <th>HMRC Share Class Ref No.</th>
+      <th>Sub Fund Name</th>
+      <th>ISIN No.</th>
+      <th>CUSIP No.</th>
+      <th>Reporting From</th>
+      <th>Ceased Reporting From</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @funds.each do |fund| %>
+      <tr>
+        <td><%= fund.reporting_fund_ref %></td>
+        <td><%= fund.parent_fund %></td>
+        <td><%= fund.hmrc_share_class_ref_no %></td>
+        <td><%= fund.sub_fund_name %></td>
+        <td><%= fund.isin_no %></td>
+        <td><%= fund.cusip_no %></td>
+        <td><%= fund.reporting_from %></td>
+        <td><%= fund.ceased_at %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
