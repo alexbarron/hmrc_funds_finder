@@ -1,6 +1,7 @@
 <table class="table-auto">
   <thead>
     <tr>
+      <th>Ticker</th>
       <th>Reporting Fund Ref</th>
       <th>Parent Fund</th>
       <th>HMRC Share Class Ref No.</th>
@@ -14,6 +15,7 @@
   <tbody>
     <% @funds.each do |fund| %>
       <tr>
+        <td><%= fund.ticker %></td>
         <td><%= fund.reporting_fund_ref %></td>
         <td><%= fund.parent_fund %></td>
         <td><%= fund.hmrc_share_class_ref_no %></td>

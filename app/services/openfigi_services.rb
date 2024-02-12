@@ -1,0 +1,2 @@
+module OpenFIGIServices
+end

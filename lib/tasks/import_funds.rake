@@ -8,6 +8,7 @@ namespace :import do
     end
 
     new_funds = funds.map do |attrs|
+        attrs["cusip_no"] = attrs["cusip_no"].gsub("-","")
         Fund.new(attrs)
     end
 

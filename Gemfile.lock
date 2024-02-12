@@ -85,6 +85,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
+    coderay (1.1.3)
     concurrent-ruby (1.2.3)
     crass (1.0.6)
     csv (3.2.8)
@@ -95,6 +96,9 @@ GEM
     erubi (1.12.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.0.1)
@@ -122,6 +126,7 @@ GEM
     mini_mime (1.1.5)
     minitest (5.22.0)
     msgpack (1.7.2)
+    multi_xml (0.6.0)
     net-imap (0.4.10)
       date
       net-protocol
@@ -135,6 +140,9 @@ GEM
     nokogiri (1.16.2-x86_64-linux)
       racc (~> 1.4)
     pg (1.5.4)
+    pry (0.14.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     psych (5.1.2)
       stringio
     public_suffix (5.0.4)
@@ -228,9 +236,11 @@ DEPENDENCIES
   capybara
   csv
   debug
+  httparty
   importmap-rails
   jbuilder
   pg (~> 1.1)
+  pry
   puma (~> 5.0)
   rails (~> 7.0.8)
   selenium-webdriver
