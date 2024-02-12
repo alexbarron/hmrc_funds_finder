@@ -25,17 +25,17 @@ module OpenFIGIServices
 
             if !result["error"].nil? || !result["warning"].nil?
               puts "Error/Warning with #{fund.sub_fund_name} " + (!result["error"].nil? ? result["error"] : result["warning"])
-              @tickers << retry_fund(fund)
+              fund.ticker = retry_fund(fund)
             else
-              ticker = result["data"].first["ticker"]
-              @tickers << ticker
-              puts "Ticker: #{ticker} - FIGI Name: #{result["data"].first["name"]} - HMRC Name: #{fund.sub_fund_name}"
+              fund.ticker = result["data"].first["ticker"]
+              puts "Ticker: #{result["data"].first["ticker"]} - FIGI Name: #{result["data"].first["name"]} - HMRC Name: #{fund.sub_fund_name}"
             end
           end
-          @tickers.each {|t| puts t}
         end
       rescue => e
-        binding.pry
+        OpenStruct.new({success?: false, error: e})
+      else
+        OpenStruct.new({success?: true, funds: @funds})
       end
     end
 
