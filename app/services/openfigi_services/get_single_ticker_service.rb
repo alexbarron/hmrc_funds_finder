@@ -20,18 +20,21 @@ module OpenFIGIServices
   
         if results.response.code == "200"
           if results.first["error"]
-            puts "ERROR with #{fund.sub_fund_name} " + results.first["error"]
+            puts "ERROR with #{@fund.sub_fund_name} " + results.first["error"]
+            raise "Lookup failed with error: #{results.first["error"]}"
           elsif results.first["warning"]
-            puts "WARNING with #{fund.sub_fund_name} " + results.first["warning"]
+            puts "WARNING with #{@fund.sub_fund_name} " + results.first["warning"]
+            raise "Lookup failed with warning: #{results.first["warning"]}"
           else
-            ticker = results.first["data"].first["ticker"]
-            puts "Ticker: #{ticker} - FIGI Name: #{results.first["data"].first["name"]} - HMRC Name: #{fund.sub_fund_name}"
+            @fund.ticker = results.first["data"].first["ticker"]
+            @fund.openfigi_name = results.first["data"].first["name"]
+            puts "Ticker: #{@fund.ticker} - FIGI Name: #{@fund.openfigi_name} - HMRC Name: #{@fund.sub_fund_name}"
           end
         end
       rescue => e
         OpenStruct.new({success?: false, error: e})
       else
-        OpenStruct.new({success?: true, ticker: ticker})
+        OpenStruct.new({success?: true, fund: @fund})
       end
     end
 
@@ -39,16 +42,15 @@ module OpenFIGIServices
 
       def build_request_body
         mapping = {
-          exchCode: "US",
           marketSecDes: "Equity"
         }
 
-        if @preferred_id == "isin_no" && !fund.isin_no.empty?
+        if @preferred_id == "isin_no" && !@fund.isin_no.empty?
           mapping[:idType] = "ID_ISIN"
-          mapping[:idValue] = fund.isin_no
+          mapping[:idValue] = @fund.isin_no
         elsif !fund.cusip_no.empty?
           mapping[:idType] = "ID_CUSIP"
-          mapping[:idValue] = fund.cusip_no
+          mapping[:idValue] = @fund.cusip_no
         else
           raise "Fund has no CUSIP or ISIN"
         end

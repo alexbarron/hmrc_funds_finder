@@ -25,9 +25,28 @@ module OpenFIGIServices
 
             if !result["error"].nil? || !result["warning"].nil?
               puts "Error/Warning with #{fund.sub_fund_name} " + (!result["error"].nil? ? result["error"] : result["warning"])
-              fund.ticker = retry_fund(fund)
+              
+              # Skip if not retriable
+              unless retriable?(fund)
+                fund.ticker = "Not Available"
+                fund.openfigi_name = "Not Available"
+                puts "No OpenFIGI result found for #{fund.sub_fund_name}"
+                next
+              end
+
+              retried_fund = retry_fund(fund)
+
+              if retried_fund.success?
+                fund.ticker = retried_fund.fund.ticker
+                fund.openfigi_name = retried_fund.fund.openfigi_name
+              else
+                fund.ticker = "Not Available"
+                fund.openfigi_name = "Not Available"
+                puts "No OpenFIGI result found for #{fund.sub_fund_name}"
+              end
             else
               fund.ticker = result["data"].first["ticker"]
+              fund.openfigi_name = result["data"].first["name"]
               puts "Ticker: #{result["data"].first["ticker"]} - FIGI Name: #{result["data"].first["name"]} - HMRC Name: #{fund.sub_fund_name}"
             end
           end
@@ -50,22 +69,28 @@ module OpenFIGIServices
         end
       end
 
+      def retriable?(fund)
+        # If CUSIP is present and failed but ISIN is present, retry
+        if !fund.cusip_no.empty? && !fund.isin_no.empty?
+          return true
+        # If CUSIP is not present and ISIN is present and failed, do not retry
+        elsif fund.cusip_no.empty? && !fund.isin_no.empty?
+          return false
+        end
+      end
+
       def retry_fund(fund)
         puts "Retrying..."
         
         if !fund.cusip_no.empty? && !fund.isin_no.empty?
-          # If fund has CUSIP, it tried CUSIP and failed. Try ISIN if present.
           result = OpenFIGIServices::GetSingleTickerService.new(fund, "isin_no").call
           if result.success?
             puts "Retry successful, found #{result.ticker}"
-            return result.ticker
           else
-            puts result.error.message
-            return nil
+            puts "Retry failed, #{result.error.message}"
           end
-        else
-          # If CUSIP failed and no ISIN present, move on
-          return nil
+
+          return result
         end
       end
 
@@ -74,7 +99,6 @@ module OpenFIGIServices
 
         @funds.each do |fund|
           mapping = {
-            exchCode: "US",
             marketSecDes: "Equity"
           }
 
