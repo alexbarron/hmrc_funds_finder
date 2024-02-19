@@ -5,7 +5,7 @@ class Fund < ApplicationRecord
   validates :cusip_no, uniqueness: { allow_nil: true, allow_blank: true }
 
   def self.set_openfigi_data
-    Fund.where("(ticker IS NULL OR ticker = 'Not Available') AND (cusip_no != '' OR isin_no != '')").in_batches(of: 100) do |batch|
+    Fund.where(ceased_at: nil).where("(ticker IS NULL OR ticker = 'Not Available') AND (cusip_no != '' OR isin_no != '')").in_batches(of: 100) do |batch|
       result = OpenFIGIServices::GetMultipleTickersService.new(batch).call
 
       # Must convert to hash to use upsert_all
@@ -17,6 +17,8 @@ class Fund < ApplicationRecord
         record_timestamps: true, 
         update_only: [:ticker, :openfigi_name]
       )
+
+      sleep(3)
     end
   end
 end
