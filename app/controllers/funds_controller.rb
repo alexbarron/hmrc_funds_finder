@@ -1,6 +1,11 @@
 class FundsController < ApplicationController
   def index
-    @funds = Fund.actively_reporting.limit(500)
+    puts params
+    if params[:query] && params[:ticker_only]
+      @funds = Fund.search_by_ticker(params[:query])
+    elsif params[:query]
+      @funds = Fund.search_by_name_and_ticker(params[:query])
+    end
   end
 
   def show

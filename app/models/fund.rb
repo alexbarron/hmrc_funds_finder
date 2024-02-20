@@ -1,7 +1,28 @@
 class Fund < ApplicationRecord
   include PgSearch::Model
-  pg_search_scope :search_by_ticker, against: :ticker
-  pg_search_scope :search_by_name_and_ticker, against: [:parent_fund, :sub_fund_name, :ticker, :openfigi_name]
+  pg_search_scope :search_by_ticker, 
+    against: :ticker, 
+    using: { 
+      tsearch: { 
+        prefix: true,
+        highlight: {
+          start_sel: '<b>',
+          stop_sel: '</b>'
+        }
+      } 
+    }
+
+  pg_search_scope :search_by_name_and_ticker, 
+    against: [:parent_fund, :sub_fund_name, :ticker, :openfigi_name], 
+    using: { 
+      tsearch: { 
+        prefix: true,
+        highlight: {
+          start_sel: '<b>',
+          stop_sel: '</b>'
+        }
+      } 
+    }
 
   validates :sub_fund_name, uniqueness: true
   validates :hmrc_share_class_ref_no, uniqueness: true
