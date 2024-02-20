@@ -1,6 +1,6 @@
 class FundsController < ApplicationController
   def index
-    @funds = Fund.all
+    @funds = Fund.actively_reporting.limit(500)
   end
 
   def show
