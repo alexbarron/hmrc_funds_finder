@@ -1,52 +1,72 @@
-<div class="max-w-md mx-auto"> 
-  <%= form_tag funds_path, method: :get do %>
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-        </svg>
+<div class="flex flex-col w-full">
+  <section class="bg-white">
+      <div class="mx-auto max-w-screen-xl text-center">
+        <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">HMRC Reporting Funds Finder</h1>
+        <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48">
+          Search tool for expats in the UK to find investment funds they can safely invest in.
+        </p>
+
+        <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48">
+          Why use this instead of the spreadsheet published by HMRC?<br /><br />
+
+          1. Includes user-friendly fund tickers where possible.<br />
+          2. Easier to search than a spreadsheet with 1 million cells.<br />
+          3. Ability to save funds for future reference. (Coming soon)
+        </p>
+
+        <div class="mx-auto w-full max-w-[550px]"> 
+          <%= form_tag funds_path, method: :get do %>
+            <div class="relative">
+              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                </svg>
+              </div>
+
+              <%= text_field_tag 'query', params[:query], placeholder: "Enter fund name or ticker", id: "default-search", class: "block w-full p-4 ps-10 text-lg text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" %>
+              
+              <%= submit_tag 'Search', class: "text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-4 py-2" %>
+            </div>
+
+            <div  class="flex items-center">
+              <% if params[:ticker_only] %>
+                <%= check_box_tag :ticker_only, 1, true, id: "link-checkbox", class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" %>
+              <% else %>
+                <%= check_box_tag :ticker_only, id: "link-checkbox", class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" %>
+              <% end %>
+              <%= label_tag :ticker_only, "Search tickers only", class: "ms-2 text-lg font-medium text-gray-900" %>
+            </div>
+          <% end %>
+        </div>
       </div>
-      <% if params[:ticker_only] %>
-        <%= check_box_tag :ticker_only, 1, true %>
-      <% else %>
-        <%= check_box_tag(:ticker_only) %>
-      <% end %>
-      <%= label_tag(:ticker_only, "Search Tickers Only") %>
-      <%= text_field_tag 'query', params[:query], placeholder: "Enter fund name or ticker", id: "default-search", class: "block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" %>
-      <%= submit_tag 'Search', class: "text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2" %>
+  </section>
+
+  <div class="divider"></div> 
+
+  <% if !@funds.nil? & !@funds.empty? %>
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-8">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th>Ticker</th>
+            <th>Parent Fund</th>
+            <th>Sub Fund Name</th>
+            <th>OpenFIGI Name</th>
+            <th>Reporting Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @funds.each do |fund| %>
+            <tr class="odd:bg-white even:bg-gray-50 border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"><%= link_to fund.ticker, fund_path(fund) %></th>
+              <td class="px-6 py-4"><%= fund.parent_fund %></td>
+              <td class="px-6 py-4"><%= fund.sub_fund_name %></td>
+              <td class="px-6 py-4"><%= fund.openfigi_name %></td>
+              <td class="px-6 py-4"><%= fund.ceased_at.nil? ? "Active" : "Ceased" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   <% end %>
 </div>
-
-<% if !@funds.nil? %>
-  <table class="table-auto">
-    <thead>
-      <tr>
-        <th>Ticker</th>
-        <th>Reporting Fund Ref</th>
-        <th>Parent Fund</th>
-        <th>HMRC Share Class Ref No.</th>
-        <th>Sub Fund Name</th>
-        <th>ISIN No.</th>
-        <th>CUSIP No.</th>
-        <th>Reporting From</th>
-        <th>Ceased Reporting From</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @funds.each do |fund| %>
-        <tr>
-          <td><%= fund.ticker %></td>
-          <td><%= fund.reporting_fund_ref %></td>
-          <td><%= fund.parent_fund %></td>
-          <td><%= fund.hmrc_share_class_ref_no %></td>
-          <td><%= fund.sub_fund_name %></td>
-          <td><%= fund.isin_no %></td>
-          <td><%= fund.cusip_no %></td>
-          <td><%= fund.reporting_from %></td>
-          <td><%= fund.ceased_at %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
